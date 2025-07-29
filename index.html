@@ -1,7 +1,7 @@
 <html>
 
 <script>
-  my_lzma = new LZMA("./lzma_worker.js");
+ var my_lzma = new LZMA("./lzma_worker.js");
 my_lzma.compress("This is my compression test.", 1, function on_compress_complete(result) {
     console.log("Compressed: " + result);
     my_lzma.decompress(result, function on_decompress_complete(result) {
