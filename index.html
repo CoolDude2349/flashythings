@@ -1,15 +1,49 @@
+<!DOCTYPE html>
 <html>
-<script src = "https://cdn.jsdelivr.net/gh/LZMA-JS/LZMA-JS@master/src/lzma.js"></script>
-<script>
-  my_lzma = new LZMA("./lzma_worker.js");
-my_lzma.compress("This is my compression test. LOLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLll", 1, function on_compress_complete(result) {
-    console.log("Compressed: " + result);
-    my_lzma.decompress(result, function on_decompress_complete(result) {
-        console.log("Decompressed: " + result);
-    }, function on_decompress_progress_update(percent) {
-        console.log("Decompressing: " + (percent * 100) + "%");
+<head>
+  <meta charset="UTF-8">
+ 
+  <script src="https://cdn.jsdelivr.net/gh/LZMA-JS/LZMA-JS@master/src/lzma.js"></script>
+</head>
+<body>
+  <h2>txt file to compress</h2>
+  <input type="file" id="fileInput" accept=".txt">
+  <script>
+    document.getElementById("fileInput").addEventListener("change", function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+
+      reader.onload = function(e) {
+        const textContent = e.target.result;
+
+        const base64 = btoa(unescape(encodeURIComponent(textContent)));
+
+        console.log("Original (Base64):", base64);
+
+        const my_lzma = new LZMA("./lzma_worker.js");
+
+        my_lzma.compress(base64, 1, function(result) {
+          console.log("Compressed result:", result);
+
+          const uint8array = new Uint8Array(result);
+          const blob = new Blob([uint8array], { type: "application/octet-stream" });
+
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = "compressed_output.txt";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(a.href);
+        }, function(progress) {
+          console.log("Compressing: " + (progress * 100).toFixed(2) + "%");
+        });
+      };
+
+      reader.readAsText(file);
     });
-}, function on_compress_progress_update(percent) {
-    console.log("Compressing: " + (percent * 100) + "%");
-});
-</script></html>
+  </script>
+</body>
+</html>
