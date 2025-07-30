@@ -27,8 +27,10 @@
         my_lzma.compress(base64, 1, function(result) {
           console.log("Compressed result:", result);
 
-          const uint8array = new Uint8Array(result);
-          const blob = new Blob([uint8array], { type: "application/octet-stream" });
+       
+const base64Output = btoa(String.fromCharCode(...new Uint8Array(result)));
+const blob = new Blob([base64Output], { type: "text/plain" });
+
 
           const a = document.createElement("a");
           a.href = URL.createObjectURL(blob);
