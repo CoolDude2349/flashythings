@@ -25,10 +25,20 @@
         const my_lzma = new LZMA("./lzma_worker.js");
 
         my_lzma.compress(base64, 1, function(result) {
-          console.log("Compressed result:", result);
+          
 
        
-const base64Output = btoa(String.fromCharCode(...new Uint8Array(result)));
+function uint8ToBase64(u8arr) {
+  let binary = '';
+  const chunkSize = 0x8000; 
+  for (let i = 0; i < u8arr.length; i += chunkSize) {
+    binary += String.fromCharCode.apply(null, u8arr.subarray(i, i + chunkSize));
+  }
+  return btoa(binary);
+}
+
+const base64Output = uint8ToBase64(new Uint8Array(result));
+
 const blob = new Blob([base64Output], { type: "text/plain" });
 
 
